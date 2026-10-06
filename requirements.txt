@@ -1,0 +1,41 @@
+# --- Data module -------------------------------------------------------
+SQLAlchemy>=2.0,<3.0
+
+# --- MCP server layer ----------------------------------------------------
+# Core MCP server framework. MUST be `fastmcp` (NOT the `mcp` SDK package)
+# -- see servers/*.py, which import `from fastmcp import FastMCP`.
+fastmcp>=2.0
+
+# --- Guardrails ----------------------------------------------------------
+# Core Guardrails AI package (import name: `guardrails`). Used as an
+# optional, defense-in-depth signal on top of the deterministic
+# regex-based checks in common/guardrails.py -- see
+# common.guardrails.GUARDRAILS_AI_AVAILABLE. The deterministic checks are
+# always the source of truth that every test in tests/test_guardrails.py
+# exercises, so the guardrail layer is fully correct and fully testable
+# even if this package (or network access to the Guardrails Hub below)
+# is unavailable in a given environment.
+guardrails-ai>=0.5
+
+# --- Testing ---------------------------------------------------------------
+pytest>=7.4
+
+# ===========================================================================
+# Guardrails Hub validators (NOT installed via `pip install -r
+# requirements.txt` -- the Guardrails Hub distributes validators through
+# its own CLI, pulled from hub://, not from PyPI). After installing
+# guardrails-ai above, run these once per environment:
+#
+#   guardrails hub install hub://guardrails/regex_match
+#   guardrails hub install hub://guardrails/detect_pii
+#
+# regex_match backs an additional, corroborating pass over the same
+# deterministic prompt-injection signatures already enforced by
+# common.guardrails.sanitize_free_text().
+# detect_pii backs an additional, corroborating pass over the same PII
+# keys already redacted by common.guardrails.redact_for_logging().
+#
+# Both are optional: common/guardrails.py guards every guardrails-ai
+# import/call so the module works correctly with or without the Hub
+# validators installed.
+# ===========================================================================
